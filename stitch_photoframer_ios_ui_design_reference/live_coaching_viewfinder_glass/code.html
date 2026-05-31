@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>PhotoFramer - Live Viewfinder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Space+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#cac6be",
+                        "surface": "#f2fbff",
+                        "on-secondary-fixed": "#001f25",
+                        "background": "#f2fbff",
+                        "primary-container": "#1e5f6b",
+                        "surface-container": "#dcf1fb",
+                        "on-primary-fixed": "#001f25",
+                        "surface-container-highest": "#d0e6ef",
+                        "primary": "#004752",
+                        "secondary-container": "#bde7f2",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bfc8ca",
+                        "tertiary-container": "#595750",
+                        "primary-fixed-dim": "#94d0de",
+                        "surface-dim": "#c8dee7",
+                        "on-tertiary-fixed": "#1d1c16",
+                        "tertiary": "#42403a",
+                        "inverse-primary": "#94d0de",
+                        "error-container": "#ffdad6",
+                        "secondary": "#3d646e",
+                        "secondary-fixed-dim": "#a4cdd8",
+                        "on-error-container": "#93000a",
+                        "on-tertiary": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-variant": "#d0e6ef",
+                        "secondary-fixed": "#c0e9f5",
+                        "outline": "#70797b",
+                        "inverse-surface": "#1f333a",
+                        "on-primary-container": "#9bd7e5",
+                        "on-tertiary-container": "#d1cdc4",
+                        "on-surface-variant": "#40484a",
+                        "on-secondary-fixed-variant": "#234c55",
+                        "surface-container-low": "#e4f7ff",
+                        "primary-fixed": "#b0ecfa",
+                        "tertiary-fixed": "#e7e2d9",
+                        "error": "#ba1a1a",
+                        "on-secondary-container": "#416872",
+                        "surface-bright": "#f2fbff",
+                        "on-surface": "#091e25",
+                        "on-primary": "#ffffff",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#004e5a",
+                        "inverse-on-surface": "#def4fe",
+                        "on-background": "#091e25",
+                        "surface-tint": "#276673",
+                        "surface-container-high": "#d6ecf5",
+                        "on-tertiary-fixed-variant": "#494740"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "xl": "32px",
+                        "sm": "12px",
+                        "xs": "8px",
+                        "safe-area-inset": "20px",
+                        "md": "16px",
+                        "lg": "24px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg": ["Hanken Grotesk"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "score-display": ["Space Mono"],
+                        "label-mono": ["Space Mono"],
+                        "headline-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Hanken Grotesk"]
+                    },
+                    "fontSize": {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "26px", "fontWeight": "400" }],
+                        "score-display": ["48px", { "lineHeight": "48px", "fontWeight": "700" }],
+                        "label-mono": ["14px", { "lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "30px", "fontWeight": "600" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background-color: rgba(65, 104, 114, 0.85); /* on-secondary-container equivalent */
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        /* Level animation for the pill */
+        @keyframes subtle-pulse {
+            0%, 100% { border-color: rgba(186, 26, 26, 0.5); } /* error color hint */
+            50% { border-color: rgba(186, 26, 26, 1); }
+        }
+        .animate-level-hint {
+            animation: subtle-pulse 2s infinite;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background h-screen w-full overflow-hidden antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Live Camera Feed Background (Simulated) -->
+<div class="absolute inset-0 bg-cover bg-center z-0" data-alt="A first-person point of view looking through a camera viewfinder at a stunning mountain range and lake landscape during golden hour. The scene features rugged peaks, calm waters reflecting the sky, and warm, inviting light. The aesthetic is cinematic and high-quality, perfectly suited for a premium photography app's live camera feed simulation." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBXXgY7xW_0jTOC7S2NoPRzL_dtOFR9TgedFTyPMz50iVvN-pvMUAVNOYZQeFZ9I8g3mct5R6F1mfsWTv-L0zNJj510zppsUdz_iR243L7hxrmaKJDOlmWIQHl4zHmy5KkWPU6WSceFXqRFCCb8-AnBhYPbSiUs1h-nw6dU6YebMixUlStIsFOGsCPlQu9WnrzrDJJnPW9RTm6c3lCpnntly5QyXB_ldZOE8DeF7KDo_l3YthREOTrRNODBLpcnLXzCaOqAgJ1ykbWb');">
+</div>
+<!-- Rule of Thirds Grid Overlay -->
+<div class="absolute inset-0 z-10 pointer-events-none flex flex-col justify-evenly px-safe-area-inset py-safe-area-inset">
+<!-- Horizontal Lines -->
+<div class="w-full h-[1px] bg-outline-variant/40 mix-blend-overlay"></div>
+<div class="w-full h-[1px] bg-outline-variant/40 mix-blend-overlay"></div>
+</div>
+<div class="absolute inset-0 z-10 pointer-events-none flex justify-evenly px-safe-area-inset py-safe-area-inset">
+<!-- Vertical Lines -->
+<div class="h-full w-[1px] bg-outline-variant/40 mix-blend-overlay"></div>
+<div class="h-full w-[1px] bg-outline-variant/40 mix-blend-overlay"></div>
+</div>
+<!-- Central Focus/Level Indicator (Subtle) -->
+<div class="absolute inset-0 z-10 pointer-events-none flex items-center justify-center">
+<div class="w-16 h-16 border-[1px] border-outline-variant/50 flex items-center justify-center relative">
+<!-- Simulated level tilt -->
+<div class="absolute w-20 h-[1px] bg-error/70 rotate-[-3deg]"></div>
+</div>
+</div>
+<!-- Top HUD (Heads Up Display) -->
+<div class="absolute top-safe-area-inset left-0 w-full px-safe-area-inset flex justify-between items-start z-20 pt-md">
+<!-- Top Left: Minimal Settings/Flash Toggle (Optional Context) -->
+<button class="w-12 h-12 rounded-full glass-panel flex items-center justify-center text-primary-fixed hover:opacity-80 transition-opacity active:scale-95">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">flash_off</span>
+</button>
+<!-- Top Center: Live Coaching Pill -->
+<div class="glass-panel border border-error rounded-full px-md py-xs flex items-center gap-xs shadow-lg animate-level-hint mt-xs">
+<span class="material-symbols-outlined text-error text-[18px]" style="font-variation-settings: 'FILL' 1;">screen_rotation</span>
+<span class="font-label-mono text-label-mono text-surface-bright">Level the phone</span>
+</div>
+<!-- Top Right: Modern Glass Score Badge -->
+<div class="glass-panel border border-outline-variant/20 rounded-xl p-sm flex flex-col items-center justify-center shadow-lg min-w-[70px]">
+<span class="font-label-mono text-[10px] uppercase tracking-wider text-primary-fixed-dim mb-[-4px]">Score</span>
+<span class="font-score-display text-score-display text-primary-fixed">85</span>
+</div>
+</div>
+<!-- Bottom Action Area (Above Nav) -->
+<div class="absolute bottom-[100px] left-0 w-full flex justify-center z-20 pb-md px-safe-area-inset pointer-events-none">
+<!-- Prominent Shutter / Primary Action Button -->
+<!-- pointer-events-auto allows this specific element to be clicked while container is passthrough -->
+<button class="pointer-events-auto bg-primary hover:bg-on-primary-fixed-variant active:scale-95 transition-all duration-200 text-on-primary rounded-full px-xl py-md flex items-center gap-sm shadow-xl border border-primary-fixed/20 backdrop-blur-sm">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">photo_camera</span>
+<span class="font-headline-md text-headline-md">Open iPhone Camera</span>
+</button>
+</div>
+<!-- Shared Component: BottomNavBar -->
+<nav class="bg-on-secondary-container/85 backdrop-blur-md dark:bg-on-secondary-fixed-variant/85 fixed bottom-0 w-full z-50 flex justify-around items-center px-lg pb-safe-area-inset pt-sm rounded-t-xl border-t border-outline-variant/20">
+<!-- Active Tab: Camera (Maps to Live Viewfinder intent) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full p-md hover:bg-secondary-container/20 transition-colors scale-90 active:transition-transform duration-200 group">
+<span class="material-symbols-outlined group-hover:opacity-80 transition-opacity" style="font-variation-settings: 'FILL' 1;">camera</span>
+</button>
+<!-- Inactive Tab: Collections -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-md hover:bg-secondary-container/20 transition-colors scale-90 active:transition-transform duration-200 rounded-full group">
+<span class="material-symbols-outlined text-secondary-fixed-dim group-hover:opacity-80 transition-opacity" style="font-variation-settings: 'FILL' 0;">collections</span>
+</button>
+<!-- Inactive Tab: School -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-md hover:bg-secondary-container/20 transition-colors scale-90 active:transition-transform duration-200 rounded-full group">
+<span class="material-symbols-outlined text-secondary-fixed-dim group-hover:opacity-80 transition-opacity" style="font-variation-settings: 'FILL' 0;">school</span>
+</button>
+<!-- Inactive Tab: Person -->
+<button class="flex flex-col items-center justify-center text-on-surface-variant p-md hover:bg-secondary-container/20 transition-colors scale-90 active:transition-transform duration-200 rounded-full group">
+<span class="material-symbols-outlined text-secondary-fixed-dim group-hover:opacity-80 transition-opacity" style="font-variation-settings: 'FILL' 0;">person</span>
+</button>
+</nav>
+</body></html>
